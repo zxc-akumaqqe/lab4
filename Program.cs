@@ -4,181 +4,115 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace лаба_4
+namespace OnlineClothingStore
 {
-    class Word
+    class ProductItem
     {
-        private string text;
-        public Word(string text)
+        private readonly string code;
+        private string name;
+        private decimal price;
+        private static int count = 0;
+        public ProductItem(string code, string name, decimal price)
         {
-            this.text = text;
-            Console.WriteLine("Создан объект Word");
+            this.code = code;
+            this.name = name;
+            this.price = price;
+            count++;
+            Console.WriteLine($"Создан товар: {name} (код: {code})");
         }
-        public string Text => text;
-        public override bool Equals(object obj)
+        public string Code => code;
+        public string Name
         {
-            Console.WriteLine("Вызван Equals в Word");
-            if (obj is Word other)
-            {
-                return text == other.text;
-            }
-            return false;
+            get { return name; }
+            set { name = value; }
         }
-        public override int GetHashCode()
+        public decimal Price
         {
-            Console.WriteLine("Вызван GetHashCode в Word");
-            return text.GetHashCode();
+            get { return price; }
+            set { price = value; }
         }
-        public override string ToString()
+        public static int GetCount()
         {
-            Console.WriteLine("Вызван ToString в Word");
-            return text;
+            return count;
+        }
+        public virtual string GetInfo()
+        {
+            return $"Код: {code}, Назва: {name}, Ціна: {price:C}";
+        }
+        public bool IsPremium()
+        {
+            return price > 3000;
         }
     }
-    class Sentence
+    class TShirt : ProductItem
     {
-        private List<Word> words;
-        public Sentence()
+        private string size;
+        public TShirt(string code, string name, decimal price, string size)
+            : base(code, name, price)
         {
-            words = new List<Word>();
-            Console.WriteLine("Создан объект Sentence");
+            this.size = size;
         }
-        public void AddWord(Word word)
+        public string Size
         {
-            Console.WriteLine($"Добавлено слово '{word.Text}' в предложение");
-            words.Add(word);
+            get { return size; }
+            set { size = value; }
         }
-        public override bool Equals(object obj)
+        public override string GetInfo()
         {
-            Console.WriteLine("Вызван Equals в Sentence");
-            if (obj is Sentence other)
-            {
-                if (words.Count != other.words.Count) return false;
-                for (int i = 0; i < words.Count; i++)
-                {
-                    if (!words[i].Equals(other.words[i]))
-                        return false;
-                }
-                return true;
-            }
-            return false;
-        }
-        public override int GetHashCode()
-        {
-            Console.WriteLine("Вызван GetHashCode в Sentence");
-            int hash = 17;
-            foreach (var w in words)
-            {
-                hash = hash * 31 + w.GetHashCode();
-            }
-            return hash;
-        }
-        public override string ToString()
-        {
-            Console.WriteLine("Вызван ToString в Sentence");
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < words.Count; i++)
-            {
-                sb.Append(words[i].ToString());
-                if (i < words.Count - 1)
-                    sb.Append(" ");
-            }
-            sb.Append(".");
-            return sb.ToString();
+            return base.GetInfo() + $", Розмір: {size}";
         }
     }
-    class Text
+    class Shoes : ProductItem
     {
-        private List<Sentence> sentences;
-        private string title;
-        public Text(string title)
+        private double size;
+        private string type;
+        public Shoes(string code, string name, decimal price, double size, string type)
+            : base(code, name, price)
         {
-            this.title = title;
-            sentences = new List<Sentence>();
-            Console.WriteLine("Создан объект Text");
+            this.size = size;
+            this.type = type;
         }
-        public void AddSentence(Sentence sentence)
+        public double Size
         {
-            Console.WriteLine("Добавлено предложение в текст");
-            sentences.Add(sentence);
+            get { return size; }
+            set { size = value; }
         }
-        public void PrintTitle()
+        public string Type
         {
-            Console.WriteLine("Заголовок текста:");
-            Console.WriteLine(title);
+            get { return type; }
+            set { type = value; }
         }
-        public void PrintText()
+        public override string GetInfo()
         {
-            Console.WriteLine("Содержимое текста:");
-            foreach (var sentence in sentences)
-            {
-                Console.WriteLine(sentence.ToString());
-            }
-        }
-        public void AppendText(Text other)
-        {
-            Console.WriteLine("Дополнение текста");
-            foreach (var sentence in other.sentences)
-            {
-                sentences.Add(sentence);
-            }
-        }
-        public override bool Equals(object obj)
-        {
-            Console.WriteLine("Вызван Equals в Text");
-            if (obj is Text other)
-            {
-                if (title != other.title || sentences.Count != other.sentences.Count) return false;
-                for (int i = 0; i < sentences.Count; i++)
-                {
-                    if (!sentences[i].Equals(other.sentences[i]))
-                        return false;
-                }
-                return true;
-            }
-            return false;
-        }
-        public override int GetHashCode()
-        {
-            Console.WriteLine("Вызван GetHashCode в Text");
-            int hash = title.GetHashCode();
-            foreach (var sentence in sentences)
-            {
-                hash = hash * 31 + sentence.GetHashCode();
-            }
-            return hash;
-        }
-        public override string ToString()
-        {
-            Console.WriteLine("Вызван ToString в Text");
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(title.ToUpper());
-            foreach (var sentence in sentences)
-            {
-                sb.AppendLine(sentence.ToString());
-            }
-            return sb.ToString();
+            return base.GetInfo() + $", Розмір: {size}, Тип: {type}";
         }
     }
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            Text text = new Text("Мій заголовок");
-            Sentence sentence1 = new Sentence();
-            sentence1.AddWord(new Word("Це"));
-            sentence1.AddWord(new Word("перше"));
-            sentence1.AddWord(new Word("речення"));
-            Sentence sentence2 = new Sentence();
-            sentence2.AddWord(new Word("Ось"));
-            sentence2.AddWord(new Word("друге"));
-            sentence2.AddWord(new Word("речення"));
-            text.AddSentence(sentence1);
-            text.AddSentence(sentence2);
-            text.PrintTitle();
-            text.PrintText();
-            Console.WriteLine("\nПовний текст за допомогою ToString():");
-            Console.WriteLine(text.ToString());
+            List<ProductItem> products = new List<ProductItem>
+            {
+                new TShirt("TS001", "Футболка з принтом", 1200m, "L"),
+                new Shoes("SH001", "Кросівки Nike", 4500m, 42, "Кросівки"),
+                new TShirt("TS002", "Футболка базова", 800m, "M"),
+                new Shoes("SH002", "Черевики зимові", 6500m, 43, "Черевики")
+            };
+            Console.WriteLine("Інформація про товари:");
+            decimal totalPrice = 0;
+            int premiumCount = 0;
+            foreach (var item in products)
+            {
+                Console.WriteLine(item.GetInfo());
+                totalPrice += item.Price;
+                if (item.IsPremium())
+                {
+                    premiumCount++;
+                }
+            }
+            Console.WriteLine($"\nЗагальна кількість товарів: {ProductItem.GetCount()}");
+            Console.WriteLine($"Загальна сума цін: {totalPrice:C}");
+            Console.WriteLine($"Кількість преміум товарів: {premiumCount}");
             Console.WriteLine("Натисніть будь-яку клавішу для виходу...");
             Console.ReadKey();
         }
